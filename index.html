@@ -727,7 +727,9 @@
             #globe-section.mode-terms #canvas-container,
             #globe-section.mode-privacy #canvas-container,
             #globe-section.mode-accessibility #canvas-container {
-                transform: scale(0.6) translateY(-20%) !important; opacity: 0.4;
+                /* Küreyi daha küçük yap ve içeriği daha net göstermek için sola/yukarı it */
+                transform: scale(0.4) translateX(-20%) translateY(-20%) !important; 
+                opacity: 0.3;
             }
             
             /* General Mobile adjustments */
@@ -746,49 +748,63 @@
             /* 2. GÖREV: İstatistik çubuğu mobil ayarlaması */
             .stats-bar { bottom: 80px; left: 20px; gap: 20px; } 
 
-            /* Mobile Layer Positioning (Full width, centered) */
+            /* Mobile Layer Positioning (Full width, centered, starts below header) */
             .content-layer {
                 padding: 0 20px;
                 transform: translateY(-50%) !important;
             }
+            
+            /* Tüm içerik panelleri için temel mobil konumlandırma */
             .services-layer,
             .contact-layer,
             .about-layer,
-            .terms-layer, /* Yeni */
-            .privacy-layer, /* Yeni */
-            .accessibility-layer { /* Yeni */
-                width: 100%; left: 0;
-                padding: 40px 20px;
+            .terms-layer, 
+            .privacy-layer, 
+            .accessibility-layer { 
+                width: 100%; 
+                left: 0;
+                padding: 20px; /* Kenar boşluğu azaltıldı */
                 transform: translateY(50px) translateX(-100px) !important;
                 text-align: center;
                 background: none; 
-                margin-top: 60px; 
+                /* Header ve Footer arasında kalan alanı kullan */
                 top: 50%;
                 max-height: calc(100vh - 120px); 
+                margin-top: 60px; 
             }
+            
+            /* Animasyon bitiş pozisyonu */
             #globe-section.mode-services .services-layer,
             #globe-section.mode-contact .contact-layer,
             #globe-section.mode-about .about-layer,
-            #globe-section.mode-terms .terms-layer, /* Yeni */
-            #globe-section.mode-privacy .privacy-layer, /* Yeni */
-            #globe-section.mode-accessibility .accessibility-layer { /* Yeni */
+            #globe-section.mode-terms .terms-layer, 
+            #globe-section.mode-privacy .privacy-layer, 
+            #globe-section.mode-accessibility .accessibility-layer { 
                 transform: translateY(-50%) translateX(0) !important; 
             }
             
-            /* GÖREV 4 MOBİL: Tek sütuna geri dön */
+            /* İLETİŞİM FORMU MOBİL DÜZELTMESİ (Yan yana duran alanlar alt alta döner) */
             .contact-layer .contact-grid-wrapper {
-                grid-template-columns: 1fr; /* Alt alta dizilir */
-            }
-
-            /* Contact Mobile */
-            .contact-layer .contact-form input,
-            .contact-layer .contact-form textarea {
-                 width: 100%; /* Ensure inputs take full width on mobile */
+                grid-template-columns: 1fr; 
             }
             .contact-layer .contact-form .form-grid {
                 grid-template-columns: 1fr; /* 2 sütun mobil için 1 sütuna döner */
             }
-            /* 4. GÖREV: İletişim formu ve Mahremiyet içeriği mobil görünümde ortalanır */
+
+            /* Hizmet Galerisi mobil düzeni */
+             .services-gallery { 
+                flex-direction: column; 
+                max-height: none; 
+                align-items: center; 
+            }
+            .services-gallery img { 
+                width: 100%; 
+                max-width: 400px; /* Çok genişlemeyi engelle */
+                height: auto; 
+            }
+
+
+            /* Diğer mobil ortalamalar */
             .contact-layer .contact-info-box,
             .contact-layer .contact-form,
             .privacy-layer .contact-info,
@@ -1725,7 +1741,7 @@
     }
 
     /**
-     * Kıtaların/Ağların Hatlarını Çizen Fonksiyon
+     * Kıtaların/Ağların Hatlarını Çizen Fonksiyon (Şimdi THREE.Points kullanıyor)
      */
     function createContinentOutlines() {
         const outlinePoints = [];
@@ -1748,13 +1764,15 @@
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(outlinePoints, 3));
 
-        const material = new THREE.LineBasicMaterial({ 
-            color: 0x38bdf8, // Tema rengi
+        const material = new THREE.PointsMaterial({ 
+            color: 0x38bdf8, 
+            size: 0.05, // Küçük, parlak noktalar
             transparent: true, 
-            opacity: 0.6,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending // Parlaklık ekle
         });
         
-        return new THREE.Line(geometry, material); 
+        return new THREE.Points(geometry, material); // THREE.Points kullanıldı
     }
 
 
@@ -1800,7 +1818,7 @@
 
         // 1. Globe Wireframe
         const geometry = new THREE.IcosahedronGeometry(globeRadius, 3);
-        const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x0ea5e9, wireframe: true, transparent: true, opacity: 0.15 });
+        const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x0ea5e9, wireframe: true, transparent: true, opacity: 0.05 }); // Opaklık azaltıldı
         const globeWireframe = new THREE.Mesh(geometry, wireframeMaterial);
         mainGroup.add(globeWireframe);
 
@@ -1815,7 +1833,7 @@
         const core = new THREE.Mesh(coreGeo, coreMat);
         mainGroup.add(core);
 
-        // 4. Continent Outlines (Yeni eklenen Hatlar)
+        // 4. Continent Outlines (Siber Dünya Haritası)
         const continentOutlineLines = createContinentOutlines();
         mainGroup.add(continentOutlineLines);
         
